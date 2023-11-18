@@ -12,4 +12,5 @@ C, Visual Studio 2019
 경사하강법을 통해 최적의 가중치를 찾아냄.
 
 ### 데이터
-Boston Housing 샘플데이터 사용
+Boston Housing 샘플데이터 사용</br>
+프로젝트 폴더 내에 csv파일로 저장되어 있음.
