@@ -4,9 +4,9 @@
 
 #pragma warning(disable:4996)
 
-#define MAX_DATA						506							// ÀüÃ¼ µ¥ÀÌÅÍ °³¼ö, M
-#define ALPHA							0.01						// ÇĞ½À·ü
-#define EPOCH							50000						// ÇĞ½À È½¼ö
+#define MAX_DATA						506							// ì „ì²´ ë°ì´í„° ê°œìˆ˜, M
+#define ALPHA							0.01						// í•™ìŠµë¥ 
+#define EPOCH							50000						// í•™ìŠµ íšŸìˆ˜
 
 struct Model {
 	double w0;
@@ -18,14 +18,14 @@ struct Target {
 	double medv;
 };
 
-Target * LoadData();												// BostonHousing Data¸¦ ¹Ş¾Æ¿Â´Ù.
+Target * LoadData();												// BostonHousing Dataë¥¼ ë°›ì•„ì˜¨ë‹¤.
 void Training(struct Target * target, struct Model * model);
 void Predict(struct Model* model);
 
 void main() {
 
 	struct Target * target = LoadData();
-	struct Model model = {1, 1};									// ÇĞ½ÀµÇÁö ¾ÊÀº ÃÊ±â ¸ğµ¨
+	struct Model model = {1, 1};									// í•™ìŠµë˜ì§€ ì•Šì€ ì´ˆê¸° ëª¨ë¸
 
 	for (int i = 0; i < MAX_DATA; i++)
 		printf("rm, medv : %lf, %lf\n", target[i].rm, target[i].medv);
@@ -53,27 +53,27 @@ void Predict(struct Model* model) {
 	
 }
 
-void Training(struct Target* target, struct Model* model) {			// °æ»çÇÏ°­¹ıÀ» ÀÌ¿ëÇÑ Training
+void Training(struct Target* target, struct Model* model) {			// ê²½ì‚¬í•˜ê°•ë²•ì„ ì´ìš©í•œ Training
 
 	Model diff_vec = { 0.f, };
 
 	for (int i = 0; i < MAX_DATA; i++) {
-		double predVal = model->w1 * target[i].rm + model->w0 * 1;	// ¿¹Ãø
-		double error = predVal - target[i].medv;					// ¿¹ÃøÇÑ °ª°ú ½ÇÁ¦°ªÀÇ ¿ÀÂ÷¸¦ ±¸ÇÔ.
-		// ¿ÀÂ÷ ºÎÈ£ ÁÖÀÇ!, ¹İµå½Ã Predict Value - Target Value¼ø¼­·Î »©ÁÖ¾î¾ß ÇÔ
+		double predVal = model->w1 * target[i].rm + model->w0 * 1;	// ì˜ˆì¸¡
+		double error = predVal - target[i].medv;					// ì˜ˆì¸¡í•œ ê°’ê³¼ ì‹¤ì œê°’ì˜ ì˜¤ì°¨ë¥¼ êµ¬í•¨.
+		// ì˜¤ì°¨ ë¶€í˜¸ ì£¼ì˜!, ë°˜ë“œì‹œ Predict Value - Target Valueìˆœì„œë¡œ ë¹¼ì£¼ì–´ì•¼ í•¨
 
-		diff_vec.w0 += error * 1;
+		diff_vec.w0 += error * 1;							// ë”ë¯¸ ê°€ì¤‘ì¹˜
 		diff_vec.w1 += error * target[i].rm;
 
 	}
 
 	diff_vec.w0 /= MAX_DATA;
 	diff_vec.w1 /= MAX_DATA;
-	// ¿©±â±îÁö ¼Õ½ÇÇÔ¼ö ¹ÌºĞ°ª °è»ê
+	// ì—¬ê¸°ê¹Œì§€ ì†ì‹¤í•¨ìˆ˜ ë¯¸ë¶„ê°’ ê³„ì‚°
 
 	model->w0 -= diff_vec.w0 * ALPHA;
 	model->w1 -= diff_vec.w1 * ALPHA;
-	// ÇĞ½À·üÀ» (º¤ÅÍ ÀÌµ¿¹æÇâ) °öÇÑ ÈÄ ´õÇØ °¡ÁßÄ¡ Á¶Á¤
+	// í•™ìŠµë¥ ì„ (ë²¡í„° ì´ë™ë°©í–¥) ê³±í•œ í›„ ë”í•´ ê°€ì¤‘ì¹˜ ì¡°ì •
 
 }
 
@@ -86,14 +86,14 @@ Target * LoadData() {
 
 	FILE* fp = fopen("BostonHousing.csv", "rt");
 	
-	fgets(buf, sizeof(buf), fp);								// csv ÆÄÀÏÀÇ ÇìµåºÎºĞÀ» ¸ÕÀú ÀĞ¾î¿Â´Ù.
+	fgets(buf, sizeof(buf), fp);								// csv íŒŒì¼ì˜ í—¤ë“œë¶€ë¶„ì„ ë¨¼ì € ì½ì–´ì˜¨ë‹¤.
 
 	int tIdx = 0;
-	while (fgets(buf, sizeof(buf), fp) != NULL) {				// µ¥ÀÌÅÍ¸¦ ÀĞ±â ½ÃÀÛÇÑ´Ù.
+	while (fgets(buf, sizeof(buf), fp) != NULL) {				// ë°ì´í„°ë¥¼ ì½ê¸° ì‹œì‘í•œë‹¤.
 
 		char * data;
 		
-		for(int i = 0; i < 5; i++){								// ÅäÅ«(,) ºĞ¸®
+		for(int i = 0; i < 5; i++){								// í† í°(,) ë¶„ë¦¬
 			data = strchr(buf, ',');
 			*data = ' ';
 		}
@@ -101,15 +101,15 @@ Target * LoadData() {
 		*strchr(buf, ',') = ' ';
 		data++;
 
-		target[tIdx].rm = atof(data);							// rm data ÃßÃâ
+		target[tIdx].rm = atof(data);							// rm data ì¶”ì¶œ
 		
-		for (int i = 0; i < 7; i++) {							// ÅäÅ«(,) ºĞ¸®
+		for (int i = 0; i < 7; i++) {							// í† í°(,) ë¶„ë¦¬
 			data = strchr(buf, ',');
 			*data = ' ';
 		}
 
 		data++;
-		target[tIdx].medv = atof(data);							// medv data ÃßÃâ
+		target[tIdx].medv = atof(data);							// medv data ì¶”ì¶œ
 
 		tIdx++;
 	}
