@@ -4,9 +4,9 @@
 
 #pragma warning(disable:4996)
 
-#define MAX_DATA						506							// ì „ì²´ ë°ì´í„° ê°œìˆ˜, M
-#define ALPHA							0.01						// í•™ìŠµë¥ 
-#define EPOCH							50000						// í•™ìŠµ íšŸìˆ˜
+#define MAX_DATA						506							// ÀüÃ¼ µ¥ÀÌÅÍ °³¼ö, M
+#define ALPHA							0.01						// ÇĞ½À·ü
+#define EPOCH							50000						// ÇĞ½À È½¼ö
 
 struct Model {
 	double w0;
@@ -18,62 +18,96 @@ struct Target {
 	double medv;
 };
 
-Target * LoadData();												// BostonHousing Dataë¥¼ ë°›ì•„ì˜¨ë‹¤.
+Target * LoadData();												// BostonHousing Data¸¦ ¹Ş¾Æ¿Â´Ù.
 void Training(struct Target * target, struct Model * model);
-void Predict(struct Model* model);
+int Predict(struct Model* model);
+void PrintTraningResult(struct Target* target, struct Model* model);
 
 void main() {
 
 	struct Target * target = LoadData();
-	struct Model model = {1, 1};									// í•™ìŠµë˜ì§€ ì•Šì€ ì´ˆê¸° ëª¨ë¸
+	struct Model model = {1, 1};									// ÇĞ½ÀµÇÁö ¾ÊÀº ÃÊ±â ¸ğµ¨
 
 	for (int i = 0; i < MAX_DATA; i++)
 		printf("rm, medv : %lf, %lf\n", target[i].rm, target[i].medv);
 
-	for (int i = 0; i < EPOCH; i++)
+	for (int i = 0; i < EPOCH; i++){
+		if (i % 1000 == 0)											// 1000¹ø ÇĞ½ÀÇÒ ¶§ ¸¶´Ù ÇĞ½À °á°ú¸¦ Ç¥½ÃÇØÁÜ.
+			PrintTraningResult(target, &model);
+		
 		Training(target, &model);
+
+	}
 
 	printf("Training Result : %lf * x + %lf * 1\n\n", model.w1, model.w0);
 
-	while (1)
-		Predict(&model);
+	while (Predict(&model) != -1);
 
+	free(target);
 
 }
 
-void Predict(struct Model* model) {
+int Predict(struct Model* model) {
 
 	double rm;
 
-	printf("Enter what you want to know house price : ");
+	printf("Enter what you want to know house price (-1 to exit): ");
 
 	scanf("%lf", &rm);
 
+	if (rm == -1){
+		printf("\nBye...");
+		return rm;
+	}
+
 	printf("Predict result : %lf\n", model->w1 * rm + model->w0);
 	
+	return rm;
 }
 
-void Training(struct Target* target, struct Model* model) {			// ê²½ì‚¬í•˜ê°•ë²•ì„ ì´ìš©í•œ Training
+void Training(struct Target* target, struct Model* model) {			// °æ»çÇÏ°­¹ıÀ» ÀÌ¿ëÇÑ Training
 
 	Model diff_vec = { 0.f, };
 
 	for (int i = 0; i < MAX_DATA; i++) {
-		double predVal = model->w1 * target[i].rm + model->w0 * 1;	// ì˜ˆì¸¡
-		double error = predVal - target[i].medv;					// ì˜ˆì¸¡í•œ ê°’ê³¼ ì‹¤ì œê°’ì˜ ì˜¤ì°¨ë¥¼ êµ¬í•¨.
-		// ì˜¤ì°¨ ë¶€í˜¸ ì£¼ì˜!, ë°˜ë“œì‹œ Predict Value - Target Valueìˆœì„œë¡œ ë¹¼ì£¼ì–´ì•¼ í•¨
+		double predVal = model->w1 * target[i].rm + model->w0 * 1;	// ¿¹Ãø
+		double error = predVal - target[i].medv;					// ¿¹ÃøÇÑ °ª°ú ½ÇÁ¦°ªÀÇ ¿ÀÂ÷¸¦ ±¸ÇÔ.
+		// ¿ÀÂ÷ ºÎÈ£ ÁÖÀÇ!, ¹İµå½Ã Predict Value - Target Value¼ø¼­·Î »©ÁÖ¾î¾ß ÇÔ
 
-		diff_vec.w0 += error * 1;							// ë”ë¯¸ ê°€ì¤‘ì¹˜
-		diff_vec.w1 += error * target[i].rm;
+		diff_vec.w0 += error * 1;									// ´õ¹Ì ÀÔ·Â, ¸ğµ¨ y = w1 * x + w0 * 1¿¡¼­ÀÇ * 1À» ÀÇ¹Ì
+		diff_vec.w1 += error * target[i].rm;						// x(rm) ÀÔ·Â
 
 	}
 
 	diff_vec.w0 /= MAX_DATA;
 	diff_vec.w1 /= MAX_DATA;
-	// ì—¬ê¸°ê¹Œì§€ ì†ì‹¤í•¨ìˆ˜ ë¯¸ë¶„ê°’ ê³„ì‚°
+	// ¿©±â±îÁö ¼Õ½ÇÇÔ¼ö ¹ÌºĞ°ª °è»ê
 
 	model->w0 -= diff_vec.w0 * ALPHA;
 	model->w1 -= diff_vec.w1 * ALPHA;
-	// í•™ìŠµë¥ ì„ (ë²¡í„° ì´ë™ë°©í–¥) ê³±í•œ í›„ ë”í•´ ê°€ì¤‘ì¹˜ ì¡°ì •
+	// °æ»ç ÇÏ°­¹ıÀ» ÅëÇÑ °¡ÁßÄ¡ Á¶Á¤
+	// ÇĞ½À·üÀ» (º¤ÅÍ ÀÌµ¿¹æÇâ) °öÇÑ ÈÄ ´õÇØ °¡ÁßÄ¡ Á¶Á¤
+
+}
+
+void PrintTraningResult(struct Target* target, struct Model* model) {
+
+	printf("\nTrained Model is...\n");
+	printf("y = %lf * x + %lf\n", model->w1, model->w0);
+
+	double square_error = 0;
+
+	for (int i = 0; i < MAX_DATA; i++) {
+		double predVal = model->w1 * target[i].rm + model->w0 * 1;
+		double error = predVal - target[i].medv;
+
+		square_error += error * error / (2 * MAX_DATA);
+
+	}
+	// ¸ğµ¨ÀÇ ¼Õ½ÇÇÔ¼ö°ª °è»ê
+	
+	printf("Loss Rate : %lf\n", square_error);
+	// ¼Õ½ÇÇÔ¼öÀÇ ¼Õ½Ç·ü Ãâ·Â
 
 }
 
@@ -86,14 +120,14 @@ Target * LoadData() {
 
 	FILE* fp = fopen("BostonHousing.csv", "rt");
 	
-	fgets(buf, sizeof(buf), fp);								// csv íŒŒì¼ì˜ í—¤ë“œë¶€ë¶„ì„ ë¨¼ì € ì½ì–´ì˜¨ë‹¤.
+	fgets(buf, sizeof(buf), fp);								// csv ÆÄÀÏÀÇ ÇìµåºÎºĞÀ» ¸ÕÀú ÀĞ¾î¿Â´Ù.
 
 	int tIdx = 0;
-	while (fgets(buf, sizeof(buf), fp) != NULL) {				// ë°ì´í„°ë¥¼ ì½ê¸° ì‹œì‘í•œë‹¤.
+	while (fgets(buf, sizeof(buf), fp) != NULL) {				// µ¥ÀÌÅÍ¸¦ ÀĞ±â ½ÃÀÛÇÑ´Ù.
 
 		char * data;
 		
-		for(int i = 0; i < 5; i++){								// í† í°(,) ë¶„ë¦¬
+		for(int i = 0; i < 5; i++){								// ÅäÅ«(,) ºĞ¸®
 			data = strchr(buf, ',');
 			*data = ' ';
 		}
@@ -101,15 +135,15 @@ Target * LoadData() {
 		*strchr(buf, ',') = ' ';
 		data++;
 
-		target[tIdx].rm = atof(data);							// rm data ì¶”ì¶œ
+		target[tIdx].rm = atof(data);							// rm data ÃßÃâ
 		
-		for (int i = 0; i < 7; i++) {							// í† í°(,) ë¶„ë¦¬
+		for (int i = 0; i < 7; i++) {							// ÅäÅ«(,) ºĞ¸®
 			data = strchr(buf, ',');
 			*data = ' ';
 		}
 
 		data++;
-		target[tIdx].medv = atof(data);							// medv data ì¶”ì¶œ
+		target[tIdx].medv = atof(data);							// medv data ÃßÃâ
 
 		tIdx++;
 	}

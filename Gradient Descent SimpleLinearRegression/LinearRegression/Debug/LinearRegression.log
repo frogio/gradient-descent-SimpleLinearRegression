@@ -1,3 +1,5 @@
 ﻿  LinearRegression.cpp
-D:\@New Study\@머신러닝\LinearRegression\LinearRegression\LinearRegression.cpp(25,13): warning C4326: 'main'의 반환 형식이 'int'이어야 하는데 'void'입니다.
-  LinearRegression.vcxproj -> D:\@New Study\@머신러닝\LinearRegression\Debug\LinearRegression.exe
+D:\@New Study\@머신러닝\Gradient Descent SimpleLinearRegression\LinearRegression\LinearRegression.cpp(26,13): warning C4326: 'main'의 반환 형식이 'int'이어야 하는데 'void'입니다.
+D:\@New Study\@머신러닝\Gradient Descent SimpleLinearRegression\LinearRegression\LinearRegression.cpp(60,10): warning C4244: 'return': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\@New Study\@머신러닝\Gradient Descent SimpleLinearRegression\LinearRegression\LinearRegression.cpp(65,9): warning C4244: 'return': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  LinearRegression.vcxproj -> D:\@New Study\@머신러닝\Gradient Descent SimpleLinearRegression\Debug\LinearRegression.exe
